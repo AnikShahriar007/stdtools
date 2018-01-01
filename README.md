@@ -4,7 +4,7 @@
 **Version      :** 0.1.1.5  
 **Contributors :** Anonymous883  
 
-'stdtools' is a custom C library containing a number of useful c functions.
+**stdtools** is a custom C library containing a number of useful c functions.
 
 ## What is 'stdtools'? ##
 
