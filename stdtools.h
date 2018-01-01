@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <stdio.h> // Standard library added for file io
 char *uppercase(char *text); // Returns upper-cased version of text
 char *lowercase(char *text); // Returns lower-cased version of text
 char *reverse(char *text); // Returns reversed-version of text
