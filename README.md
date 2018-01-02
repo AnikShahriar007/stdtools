@@ -1,7 +1,7 @@
 # C stdtools Readme #
 
 **Name         :** stdtools  
-**Version      :** 0.1.1.5  
+**Version      :** 0.2.3.3  
 **Contributors :** Anonymous883  
 
 **stdtools** is a custom C library containing a number of useful c functions.
@@ -14,5 +14,10 @@
 
 ## Changelog ##
 
-  ### 0.1 ##
+  ### 0.2 ###
+  * Added error check with memory allocation and file io
+  * Fixed char pointer (char *) allocation
+  * Added new function 'failure'
+
+  ### 0.1 ###
   * First attempt to stdtools. 
