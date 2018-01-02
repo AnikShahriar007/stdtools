@@ -4,10 +4,10 @@
  *     Filename : stdtools.c
  *
  *  Description : A C library. Contains several useful small
- *                   C tools for reducing development time and 
- *                   faster production.
+ *                C tools for reducing development time and 
+ *                for faster production.
  *
- *      Version : 0.1.1.5
+ *      Version : 0.2.3.3
  *      Created : 12 December, 2017
  *     Compiler : gcc
  *
@@ -34,10 +34,12 @@
  * Function: Converts text to uppercase
  * Checks if character of char pointer 'text' is between 'a' - 'z'
  * Assigns uppercase format of char to 'str' by subtracting 32 if true
- * Else, assigns default char to 'str'
+ * Else, assigns default char tonn 'str'
  */
 char *uppercase(char *text){
-    char *str = malloc(strlen(text)); // Allocate storage for char pointer 'str'
+    char *str;
+    if ((str = malloc(strlen(text) + 1)) == NULL)
+        error("Can't allocate storage on heap");
     int i = 0;
     while (*text){ // If *text(char) is not NULL(\0) or 0
         if ((*text >= 'a') && (*text <= 'z')) // Check if char is in lowercase
@@ -57,7 +59,9 @@ char *uppercase(char *text){
  * Else, assigns default char to str
  */
 char *lowercase(char *text){
-    char *str = malloc(strlen(text)); // Allocates storage for char pointer 'str'
+    char *str;
+    if ((str = malloc(strlen(text) + 1)) == NULL)
+        error("Can't allocate storage on heap");
     int i = 0;
     while (*text){ // If *text(char) is not NULL(\0) or 0
         if ((*text >= 'A') && (*text <= 'Z')) 
@@ -75,7 +79,9 @@ char *lowercase(char *text){
  * Assigns value from the end of 'text' to the beginning of 'reverse_str'
  */
 char *reverse(char *text){
-    char *reverse_str = malloc(strlen(text)); // Allocate storage for char pointer reverse_str
+    char *reverse_str;
+    if ((reverse_str = malloc(strlen(text) + 1)) == NULL)
+        error("Can't allocate storage on heap");
     int len = strlen(text) - 1, i = 0;
     while (len >= 0){
         // Assign char from end of text to start of reverse_str
@@ -91,7 +97,9 @@ char *reverse(char *text){
  * prints value of int num using sprintf to str
  */
 char *itos(long long int num){
-    char *str = malloc(sizeof(char *)); // Allocates storage for char pointer str
+    char *str;
+    if ((str = malloc(sizeof(char *) * 20)) == NULL)
+        error("Can't allocate storage on heap");
     sprintf(str, "%lld", num); // Prints value of num as string to str 
     return str;
 }
@@ -107,31 +115,26 @@ int arrlen(int arrsize){
 
 /*
  * Function: Checks int array for int
- * Take array(arr), int to find(n), size of array
- * Goes through each int in array
- * If int is equal to n, returns 1
- * If loop ends and not found, returns 0
+ * Returns 1 if int of array is equal to n
+ * Returns 0 on end of array
  */
 int intint(int *arr, int n, int arrsize){
     int i = 0, len = arrlen(arrsize); // arrsize is sizeof(arr)
     while (i < len){
-        if (arr[i] == n){ // Checks if number 'i' element of arr is equal to n
-            return 1; // Returns true
+        if (arr[i] == n){
+            return 1;
         }
         ++i;
     }
-    return 0; // Returns false
+    return 0;
 }
 
 /*
  * Function: Calculate length of int
  * For positive values, Divides number in loop
- * by 10 while number > 0, length of number 
- * is reduced by 1, and len is increased by 1
- * For negative values, same process as pos.
- * but loops condition is for number to be
- * less than 0
- * Length is 0 if number is 0
+ * by 10 while number > 0
+ * For negative values, same process as positive.
+ * but loops condition is for number to be less than 0
  */
 int intlen(int number){
     int len = 0;
@@ -154,11 +157,9 @@ int intlen(int number){
 
 /*
  * Function: Searches for text in file
- * Takes file_name and text to search as arg
  * Searches file line by line for text
- * Returns 0 if file doesn't exist or 
- * text isn't in file
  * Returns 1 if text is in file
+ * Returns 0 if file doesn't exist or text isn't in file
  */
 int infile(char *file_name, char *text){
     char line[100];
@@ -171,17 +172,16 @@ int infile(char *file_name, char *text){
         if (strstr(line, text)) // Checks if text is present in line
             return 1;
     }
-    return 0; // If end of file
+    return 0;
 }
 
 /*
  * Function: Returns maximum int from array
- * Take array and sizeof(array) as arg
  * Assigns arr[index] to max if arr[index] > max
  */
 int maxint(int *arr, int arrsize){
     int max = arr[0]; // Assign value of arr[0] to max
-    int index = 1, len = arrlen(arrsize);
+    int index = 1, len = arrlen(arrsize); // arrsize is sizeof(arr)
     while (index < len){
         if (max < arr[index]) // Checks if arr[index] is > max
             max = arr[index];
@@ -192,12 +192,11 @@ int maxint(int *arr, int arrsize){
 
 /*
  * Function: Returns minimum int from array
- * Take array and sizeof(array) as arg
  * Assigns arr[index] to max if arr[index] < max
  */
 int minint(int *arr, int arrsize){
     int min = arr[0]; // Assign value of arr[0] to min
-    int index = 1, len = arrlen(arrsize);
+    int index = 1, len = arrlen(arrsize); // arrsize is sizeof(arr)
     while (index < len){
         if (min > arr[index]) // Checks if arr[index] < min
             min = arr[index];
@@ -207,13 +206,14 @@ int minint(int *arr, int arrsize){
 }
 
 /*
- * Function: Sorts array of strings / pointers
- * in alphabetical order.
+ * Function: Sorts array of strings / pointers in alphabetical order.
  * Compares values of arr[index] and arr[index + 1]
  * If returned value is > 0, swap values
  */
 void strsort(char **arr, int size){
-    char *temp = malloc(sizeof(char *)); // Allocates storage for char pointer temp
+    char *temp;
+    if ((temp = malloc(sizeof(char *))) == NULL)
+        error("Can't allocate storage on heap");
     int i, j, arrsize = arrlen(size);
     for (i = 0; i < arrsize; ++i){
         for (j = 0; j < arrsize - 1; ++j){
@@ -229,12 +229,11 @@ void strsort(char **arr, int size){
 
 /*
  * Function: Sorts array of int
- * Takes array and sizeof(array) as arg
  * Compares values of arr[index] and arr[index + 1]
  * If arr[index] > arr[index + 1], swaps values
  */
 void intsort(int *arr, int size){
-    int arrsize = arrlen(size);
+    int arrsize = arrlen(size); // size is sizeof(arr)
     int temp, i, j;
     for (i = 0; i < arrsize; ++i){
         for (j = 0; j < arrsize - 1; ++j){
@@ -250,11 +249,10 @@ void intsort(int *arr, int size){
 
 /*
  * Function: Calculates sum of elements of int array
- * Takes array and sizeof(array) as arg
  * Adds value of arr[index] to sum in each loop
  */
 long long int sum(int *arr, int size){
-    int arrsize = arrlen(size), i;
+    int arrsize = arrlen(size), i; // size is sizeof(arr)
     long long int sum = 0;
     for (i = 0; i < arrsize; ++i){
         sum += arr[i];
@@ -264,11 +262,10 @@ long long int sum(int *arr, int size){
 
 /*
  * Function: Calculates multiplication of elements of int array
- * Takes array and sizeof(array) as arg
  * Adds value of (arr[index] * multiply) to multiply in each loop
  */
 long long int multiply(int *arr, int size){
-    int arrsize = arrlen(size), i;
+    int arrsize = arrlen(size), i; // size is sizeof(arr)
     long long int multiply = 1;
     for (i = 0; i < arrsize; ++i){
         multiply *= arr[i];
@@ -278,11 +275,10 @@ long long int multiply(int *arr, int size){
 
 /*
  * Function: Calculates sum of elements of double array
- * Takes array and sizeof(array) as arg
  * Adds value of arr[index] to sum in each loop
  */
 double flsum(double *arr, int size){
-    int arrsize = size / 8, i;
+    int arrsize = size / 8, i; // size is sizeof(arr)
     double sum = 0;
     for (i = 0; i < arrsize; ++i){
         sum += arr[i];
@@ -292,11 +288,10 @@ double flsum(double *arr, int size){
 
 /*
  * Function: Calculates multiplication of elements of double array
- * Takes array and sizeof(array) as arg
  * Adds value of (arr[index] * multiply) to multiply in each loop
  */
 double flmultiply(double *arr, int size){
-    int arrsize = size / 8, i;
+    int arrsize = size / 8, i; // size is sizeof(arr)
     double multiply = 1;
     for (i = 0; i < arrsize; ++i){
         multiply *= arr[i];
@@ -306,13 +301,14 @@ double flmultiply(double *arr, int size){
 
 /*
  * Function: Creates array of int values
- * Takes argument count and int(s) as arg
  * Creates variadic list ap
  * Sets start point of ap to args
  * Assigns variadic arguments to *(arr + index)
  */
 int *intarr(int args, ...){
-    int *arr = malloc(sizeof(int) * args); // Allocates storage for int array
+    int *arr;
+    if ((arr = malloc(sizeof(int) * args)) == NULL)
+        error("Can't allocate storage on heap");
     int i;
     va_list ap; // Initialize variadic argument list
     va_start(ap, args); // Set start point of ap to args
@@ -327,14 +323,15 @@ int *intarr(int args, ...){
 
 /*
  * Function: Creates array of string values
- * Takes argument count and string(s) as arg
  * Creates variadic list ap
  * Sets start point of ap to args
  * Sets type of arguments to string / char pointer
  * Assigns variadic arguments to *(arr + index)
  */ 
 char **strarr(int args, ...){
-    char **arr = malloc(sizeof(char *) * args); // Allocate storage for string array
+    char **arr;
+    if ((arr = malloc(sizeof(char *) * args)) == NULL)
+        error("Can't allocate storage on heap");
     int i;
     va_list ap; // Creates variadic argument list 
     va_start(ap, args); // Sets start point of ap to args
@@ -360,66 +357,66 @@ char *timenow(){
 
 /*
  * Function: Writes text to file
- * Takes file_name and text as arg
  * Creates/Opens a file with file_name in write mode
  * Writes to file and closes
  */
 void flwrite(char *file_name, char *text){
-    FILE *fp = fopen(file_name, "w"); // Opens a file with file_name in writing format
-    fprintf(fp, "%s", text); // Writes text to file
-    fclose(fp); // Closes file
+    FILE *fp;
+    if ((fp = fopen(file_name, "w")) == NULL)
+        error("Can't create file");
+    fprintf(fp, "%s", text);
+    fclose(fp);
 }
 
 /*
  * Function: Appends text to file
- * Takes file_name and text as arg
  * Opens a file with file_name in append mode,
  * creates new if doesn't exist
  * Appends/writes to file, closes file
  */
 void flappend(char *file_name, char *text){
     FILE *fp; // Creates a FILE pointer
-    if (!(fp = fopen(file_name, "a"))) // Checks for file's existence
-        fp = fopen(file_name, "w"); // Creates new file if file doesn't exist
-    fprintf(fp, "%s", text); // Appends/writes to file
-    fclose(fp); // Closes file
+    if ((fp = fopen(file_name, "a")) == NULL)
+        fp = fopen(file_name, "w");
+    fprintf(fp, "%s", text);
+    fclose(fp);
 }
 
 /*
  * Function: Reads a file line by line
- * Takes file_name as arg
  * Attempts to open file, returns 0 if file doesn't exist
  * Reads lines from file till NULL
- * Returns 1
  */
 int flread(char *file_name){
-    char line[100]; // Creates a char array to store lines from files
-    FILE *fp; // Creates a FILE pointer
-    if (!(fp = fopen(file_name, "r"))) // Attempts to open file in read mode
-        return 0; // Returns 0 if attempt fails
-    while (fscanf(fp, "%99[^\n]\n", line) == 1) // Reads lines from file till NULL
-        printf("\n %s",line); // Prints line read from file
-    return 1; // Returns 1 if function worked correctly
+    char line[100];
+    FILE *fp;
+    if ((fp = fopen(file_name, "r")) == NULL){
+        return 0;
+    }
+    while (fscanf(fp, "%99[^\n]\n", line) == 1)
+        printf("\n %s",line);
+    fclose(fp);
+    return 1; // Returns 1 on success
 }
 
 /* 
  * Function: Reads next line from file
- * Takes FILE pointer as arg
  * Returns next line from file
  */
 char *flreadline(FILE *fp){
-    char *line = malloc(sizeof(char *)); // Allocates storage for char pointer
-    fscanf(fp, "%99[^\n]\n", line); // Reads next line from file
-    return line; // Returns line
+    char *line;
+    if ((line = malloc(sizeof(char *) * 100)) == NULL)
+        error("Can't allocate storage on heap");
+    fscanf(fp, "%99[^\n]\n", line);
+    return line;
 }
 
 /* 
  * Function: Opens webpage in browser
- * Takes webpage url as arg
  * Opens webpage with url using system
  */
 void open_url(char *url){
-    char cmd[100]; // Creates char array for command
+    char cmd[100];
     sprintf(cmd, "cmd /c start %s",url); 
     system(cmd); // Opens webpage on Windows
     sprintf(cmd, "x-www-browser '%s' &",url);
@@ -432,7 +429,7 @@ void open_url(char *url){
  * Function: Catches signal from keyboard
  * Takes signal number and a function as args
  * Creates struct variable
- * Assign signal handler to function 'handler'
+ * Assigns signal handler to function 'handler'
  * Sets additional flags to 0
  * Returns action
  */
@@ -445,14 +442,18 @@ int catch_signal(int sig, void (*handler)(int)){
 }
 
 /*
- * Function: Useful function to display error message
- * Takes msg as arg
- * Displays msg with error type and details
- * Terminates program
+ * Function: Useful function to display error message and terminate program
  */
 void error(char *msg){
     fprintf(stderr, " %s : %s\n",msg,strerror(errno)); // Display msg with error type and details
     exit(1); // Exit with code 1
+}
+
+/*
+ * Function: Useful function to display failure message
+ */
+void failure(char *msg){
+    fprintf(stderr, " %s : %s\n",msg,strerror(errno)); // Display msg with error type and details
 }
 
 /*
@@ -467,11 +468,11 @@ void error(char *msg){
  * Returns err_code
  */
 int swapstream(int n_desc, int std_desc){
-    FILE *fp = fopen("temp.txt","w"); // Opens file 'temp.txt' to use as a stream holder
+    FILE *fp = fopen("temp.txt","w");
     int err_code = ((dup2(std_desc, fileno(fp)) == -1) || (dup2(n_desc, std_desc) == -1) || (dup2(fileno(fp), n_desc) == -1)) ? -1 : 1; // Swaps stream and checks for errors
-    fclose(fp); // Closes file
-    system("rm temp.txt"); // Remove file 'temp.txt'
-    return err_code; // Return error code
+    fclose(fp);
+    system("rm temp.txt");
+    return err_code;
 }
 
 /*
@@ -498,14 +499,16 @@ int redstream(int n_desc, int std_desc){
  * Returns array of string/pointers
  */
 char **split(char *str, char split_char){
-    char **split_str = malloc(sizeof(char *) * 1000); // Allocates storage for array of strings with size of 1000 strings of sizeof char *
-    int len = strlen(str); // Gets length of str
+    char **split_str;
+    if ((split_str = malloc(sizeof(char *) * 1000)) == NULL)
+        error("Can't allocate storage on heap");
+    int len = strlen(str);
     int s_str_index = 0, char_index = 0, str_index = 0;
     *(split_str + s_str_index) = malloc(sizeof(char *)); // Allocates storage for first string of array
     while (*str){ // Loops until *str/char of str is not NULL or '\0'(0)
         if (*str == '\n') break; // Checks if char of str is last and char is '\n'
-        if (*str != split_char){ // Checks if char of str is not equal to split_char
-            *(*(split_str + s_str_index) + char_index) = *str; // Assigns char of str to char of index 'char_index' of string of index 's_str_index' 
+        if (*str != split_char){
+            *(*(split_str + s_str_index) + char_index) = *str; // Assigns char of 'str' to char of index 'char_index' of string of index 's_str_index' 
             ++char_index; // Sets next character's index
         }
         else{
@@ -518,22 +521,20 @@ char **split(char *str, char split_char){
         ++str;
         ++str_index;
     }
-    return split_str; // Return array of strings
+    return split_str;
 }
 
 /*
  * Function: Pauses a program
- * Takes msg as arg
  * Displays msg and waits for char input
  */
 void ppause(char *msg){
-    printf("\n %s",msg); // Displays msg
-    getchar(); // Waits for char input
+    printf("\n %s",msg);
+    getchar();
 }
 
 /*
  * Function: Delays or pauses program for 'n' second
- * Takes second as arg
  * Uses sleep function to sleep program
  */
 void psleep(int second){

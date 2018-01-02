@@ -1,4 +1,4 @@
-#include <stdio.h> // Standard library added for file io
+#include <stdio.h> // Standard library included for file io
 char *uppercase(char *text); // Returns upper-cased version of text
 char *lowercase(char *text); // Returns lower-cased version of text
 char *reverse(char *text); // Returns reversed-version of text
@@ -25,6 +25,7 @@ char *flreadline(FILE *fp); // Reads next line from file
 void open_url(char *url); // Opens webpage containing the url
 int catch_signal(int sig, void (*handler)(int)); // Catches and handles signals
 void error(char *msg); // Displays error msg and exits program with exit code 1
+void failure(char *msg); // Displays task failure msg with error code
 int swapstream(int n_desc, int std_desc); // Swaps standard streams with others
 int redstream(int n_desc, int std_desc); // Redirects standard streams
 char **split(char *str, char split_char); // Splits a string and returns an array of strings
