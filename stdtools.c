@@ -34,7 +34,7 @@
  * Function: Converts text to uppercase
  * Checks if character of char pointer 'text' is between 'a' - 'z'
  * Assigns uppercase format of char to 'str' by subtracting 32 if true
- * Else, assigns default char tonn 'str'
+ * Else, assigns default char to 'str'
  */
 char *uppercase(char *text){
     char *str;
