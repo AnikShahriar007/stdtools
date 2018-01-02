@@ -16,8 +16,9 @@
 
   ### 0.2 ###
   * Added error check with memory allocation and file io
-  * Fixed char pointer (char *) allocation
+  * Fixed char pointer (char \*) allocation
   * Added new function 'failure'
+  * Deleted unnecessary comments
 
   ### 0.1 ###
   * First attempt to stdtools. 
