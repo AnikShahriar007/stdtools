@@ -25,10 +25,14 @@ char *flreadline(FILE *fp); // Reads next line from file
 void open_url(char *url); // Opens webpage containing the url
 int catch_signal(int sig, void (*handler)(int)); // Catches and handles signals
 void error(char *msg); // Displays error msg and exits program with exit code 1
-void failure(char *msg); // Displays task failure msg with error code
 int swapstream(int n_desc, int std_desc); // Swaps standard streams with others
 int redstream(int n_desc, int std_desc); // Redirects standard streams
 char **split(char *str, char split_char); // Splits a string and returns an array of strings
 void ppause(char *msg); // Pauses a program; Waits for user input (char)
 void psleep(int second); // Delays or pauses program for n second (n == second(arg))
 void clear(); // Clears console screen
+void failure(char *msg); // Displays task failure msg with error code
+void strswap(char **str_one, char **str_two); // Swaps two strings
+void intswap(int *int_one, int *int_two); // Swaps two ints
+void flswap(float *fl_one, float *fl_two); // Swaps two floats
+

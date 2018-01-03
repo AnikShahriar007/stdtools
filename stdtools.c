@@ -34,7 +34,7 @@
  * Function: Converts text to uppercase
  * Checks if character of char pointer 'text' is between 'a' - 'z'
  * Assigns uppercase format of char to 'str' by subtracting 32 if true
- * Else, assigns default char to 'str'
+ * Else, assigns default char tonn 'str'
  */
 char *uppercase(char *text){
     char *str;
@@ -172,6 +172,7 @@ int infile(char *file_name, char *text){
         if (strstr(line, text)) // Checks if text is present in line
             return 1;
     }
+    fclose(file);
     return 0;
 }
 
@@ -218,10 +219,7 @@ void strsort(char **arr, int size){
     for (i = 0; i < arrsize; ++i){
         for (j = 0; j < arrsize - 1; ++j){
             if (strcmp(arr[j], arr[j + 1]) > 0){ // Compares arr[j] and arr[j + 1]
-                // Swaps arr[j] and arr[j + 1] if true
-                temp = arr[j];
-                arr[j] = arr[j + 1];
-                arr[j + 1] = temp;
+                strswap(&arr[j], &arr[j + 1]);
             }
         }
     }
@@ -450,13 +448,6 @@ void error(char *msg){
 }
 
 /*
- * Function: Useful function to display failure message
- */
-void failure(char *msg){
-    fprintf(stderr, " %s : %s\n",msg,strerror(errno)); // Display msg with error type and details
-}
-
-/*
  * Function: Swaps data streams 
  * Takes n_desc(new descriptor) and std_desc(standard descriptor) as arg
  * Swapping streams:
@@ -550,4 +541,51 @@ void psleep(int second){
 void clear(){
     if (OS) system("clear"); // Clears console screen in Linux and other OS
     else system("cls"); // Clears console screen in Windows
+}
+
+/*
+ * Function: Useful function to display failure message
+ */
+void failure(char *msg){
+    fprintf(stderr, " %s : %s\n",msg,strerror(errno)); // Display msg with error type and details
+}
+
+/*
+ * Function: Swaps two strings
+ * Assigns str_one to str_temp
+ * Assigns str_two to str_one
+ * Assigns str_temp to str_two
+ */
+void strswap(char **str_one, char **str_two){
+    int max_len = (strcmp(*str_one, *str_two) > 0) ? strlen(*str_one) : strlen(*str_two);
+    char *str_temp = malloc(max_len + 1);
+    str_temp = *str_one;
+    *str_one = *str_two;
+    *str_two = str_temp;
+}
+
+/*
+ * Function: Swaps two ints
+ * Assigns value of int_one to int_temp
+ * Assigns value of int_two to int_one
+ * Assigns value of int_temp to int_two
+ */
+void intswap(int *int_one, int *int_two){
+    int int_temp;
+    int_temp = *int_one;
+    *int_one = *int_two;
+    *int_two = int_temp;
+}
+
+/*
+ * Function: Swaps two floats
+ * Assigns value of fl_one to fl_temp
+ * Assigns value of fl_two to fl_one
+ * Assigns value of fl_temp to fl_two
+ */
+void flswap(float *fl_one, float *fl_two){
+    float fl_temp;
+    fl_temp = *fl_one;
+    *fl_one = *fl_two;
+    *fl_two = fl_temp;
 }
