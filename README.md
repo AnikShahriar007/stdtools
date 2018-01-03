@@ -1,7 +1,7 @@
 # C stdtools Readme #
 
 **Name         :** stdtools  
-**Version      :** 0.2.3.3  
+**Version      :** 0.3.2.7  
 **Contributors :** Anonymous883  
 
 **stdtools** is a custom C library containing a number of useful c functions.
@@ -13,6 +13,13 @@
 **stdtools** is made open-source for the help of other programmers. Feel free to use it, and of course contributing in it. If you can upgrade any function, modify it to run in efficient ways, please go ahead. The more function it contains, the better for others.
 
 ## Changelog ##
+
+  ### 0.3 ###
+  * Added new function 'strswap'
+	* Added new function 'intswap'
+  * Added new function 'flswap'
+  * Modified 'strsort' function to use 'strswap'
+	* Closed file at end of 'infile'
 
   ### 0.2 ###
   * Added error check with memory allocation and file io
