@@ -16,10 +16,10 @@
 
   ### 0.3 ###
   * Added new function 'strswap'
-	* Added new function 'intswap'
+  * Added new function 'intswap'
   * Added new function 'flswap'
   * Modified 'strsort' function to use 'strswap'
-	* Closed file at end of 'infile'
+  * Closed file at end of 'infile'
 
   ### 0.2 ###
   * Added error check with memory allocation and file io
