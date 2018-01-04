@@ -1,7 +1,7 @@
 # C stdtools Readme #
 
 **Name         :** stdtools  
-**Version      :** 0.3.2.7  
+**Version      :** 0.4.3.7  
 **Contributors :** Anonymous883  
 
 **stdtools** is a custom C library containing a number of useful c functions.
@@ -13,6 +13,17 @@
 **stdtools** is made open-source for the help of other programmers. Feel free to use it, and of course contributing in it. If you can upgrade any function, modify it to run in efficient ways, please go ahead. The more function it contains, the better for others.
 
 ## Changelog ##
+
+  ### 0.4 ###
+  * Added new function 'tstruct'
+	* Added new function 'getsec'
+	* Added new function 'getmin'
+	* Added new function 'gethour'
+	* Added new function 'getmonth'
+	* Added new function 'getyear'
+	* Added new function 'getwday'
+	* Added new function 'getmday'
+	* Added new function 'getyday'
 
   ### 0.3 ###
   * Added new function 'strswap'
