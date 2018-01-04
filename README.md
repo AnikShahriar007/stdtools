@@ -16,14 +16,14 @@
 
   ### 0.4 ###
   * Added new function 'tstruct'
-	* Added new function 'getsec'
-	* Added new function 'getmin'
-	* Added new function 'gethour'
-	* Added new function 'getmonth'
-	* Added new function 'getyear'
-	* Added new function 'getwday'
-	* Added new function 'getmday'
-	* Added new function 'getyday'
+  * Added new function 'getsec'
+  * Added new function 'getmin'
+  * Added new function 'gethour'
+  * Added new function 'getmonth'
+  * Added new function 'getyear'
+  * Added new function 'getwday'
+  * Added new function 'getmday'
+  * Added new function 'getyday'
 
   ### 0.3 ###
   * Added new function 'strswap'
