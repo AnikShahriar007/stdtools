@@ -35,4 +35,12 @@ void failure(char *msg); // Displays task failure msg with error code
 void strswap(char **str_one, char **str_two); // Swaps two strings
 void intswap(int *int_one, int *int_two); // Swaps two ints
 void flswap(float *fl_one, float *fl_two); // Swaps two floats
-
+struct tm *tstruct(); // Returns time struct
+int getsec(); // Returns second of current time; Range : 0 - 59
+int getmin(); // Returns minute of current time; Range : 0 - 59
+int gethour(); // Returns hour of current time; Range : 0 - 23
+int getmonth(); // Returns current month; Range : 1 - 12
+int getyear(); // Returns current year
+int getwday(); // Returns day of week; Range : 1 - 7
+int getmday(); // Returns day of month; Range : 1 - 31
+int getyday(); // Returns day of year; Range : 1 - 365
