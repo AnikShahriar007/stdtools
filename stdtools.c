@@ -589,3 +589,74 @@ void flswap(float *fl_one, float *fl_two){
     *fl_one = *fl_two;
     *fl_two = fl_temp;
 }
+
+/*
+ * Function: Returns time struct
+ * Sets current time using time function
+ * Fills t_s struct with values representing localtime
+ */
+struct tm *tstruct(){
+    struct tm *t_s;
+    time_t t;
+    time (&t); // Sets current time
+    t_s = localtime(&t); // Fills t_s struct
+    return t_s;
+}
+
+/*
+ * Function: Returns second of current time
+ */
+int getsec(){
+    return ((struct tm *) tstruct())->tm_sec;
+}
+
+/*
+ * Function: Returns minute of current time
+ */
+int getmin(){
+    return ((struct tm *) tstruct())->tm_min;
+}
+
+/*
+ * Function: Returns hour of current time
+ */
+int gethour(){
+    return ((struct tm *) tstruct())->tm_hour;
+}
+
+/*
+ * Function: Returns current month
+ */
+int getmonth(){
+    return ((struct tm *) tstruct())->tm_mon + 1;
+}
+
+/*
+ * Function: Returns current year
+ */
+int getyear(){
+    return ((struct tm *) tstruct())->tm_year + 1900;
+}
+
+/*
+ * Function: Returns current day of week
+ */
+int getwday(){
+    return ((struct tm *) tstruct())->tm_wday + 1;
+}
+
+/*
+ * Function: Returns current day of month
+ */
+int getmday(){
+    return ((struct tm *) tstruct())->tm_mday;
+}
+
+/*
+ * Function: Returns current day of year
+ */
+int getyday(){
+    return ((struct tm *) tstruct())->tm_yday + 1;
+}
+
+
