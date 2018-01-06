@@ -7,7 +7,7 @@
  *                C tools for reducing development time and 
  *                for faster production.
  *
- *      Version : 0.2.3.3
+ *      Version : 0.5.1.4
  *      Created : 12 December, 2017
  *     Compiler : gcc
  *
@@ -29,6 +29,120 @@
 #undef OS    // Undefine OS
 #define OS 0 // Redefine OS to 0 
 #endif // _WIN32
+
+/* -------------------- FILE IO -------------------- */
+
+/*
+ * Function: Writes text to file
+ * Creates/Opens a file with file_name in write mode
+ * Writes to file and closes
+ */
+int flwrite(char *file_name, char *text){
+    FILE *fp;
+    int err_code;
+    if ((fp = fopen(file_name, "w")) == NULL)
+        return 0;
+    err_code = (fprintf(fp, "%s", text) < 0) ? 0 : 1;
+    fclose(fp);
+    return err_code;
+}
+
+/*
+ * Function: Appends text to file
+ * Opens a file with file_name in append mode,
+ * creates new if doesn't exist
+ * Appends/writes to file, closes file
+ */
+int flappend(char *file_name, char *text){
+    FILE *fp;
+    int err_code;
+    if ((fp = fopen(file_name, "a")) == NULL)
+        if ((fp = fopen(file_name, "w")) == NULL)
+            return 0;
+    err_code = (fprintf(fp, "%s", text) < 0) ? 0 : 1;
+    fclose(fp);
+    return err_code;
+}
+
+/*
+ * Function: Reads a file line by line
+ * Attempts to open file, returns 0 if file doesn't exist
+ * Reads lines from file till NULL
+ */
+int flread(char *file_name){
+    char line[100];
+    FILE *fp;
+    if ((fp = fopen(file_name, "r")) == NULL){
+        return 0;
+    }
+    while (!feof(fp))
+        printf("%s",flreadline(fp));
+    fclose(fp);
+    return 1;
+}
+
+/* 
+ * Function: Reads next line from file
+ * Returns next line from file
+ */
+char *flreadline(FILE *fp){
+    char line[100];
+    char *rline;
+    if ((rline = malloc(sizeof(char *) * 100)) == NULL)
+        error("Can't allocate storage on heap");
+    if (fgets(line, 100, fp) == NULL)
+        error("Can't read line");
+    rline = strdup(line);
+    return rline;
+}
+
+/*
+ * Function: Searches for text in file
+ * Searches file line by line for text
+ * Returns 1 if text is in file
+ * Returns 0 if file doesn't exist or text isn't in file
+ */
+int infile(char *file_name, char *text){
+    char line[100];
+    FILE *file;
+    if (!(file = fopen(file_name, "r"))){ // Opens and checks for file's existence 
+        fprintf(stderr, "\n File not found. \n");
+        return 0;
+    }
+    while (fscanf(file, "%99[^\n]\n", line) == 1){ // Read file line by line
+        if (strstr(line, text)) // Checks if text is present in line
+            return 1;
+    }
+    fclose(file);
+    return 0;
+}
+
+/*
+ * Function: Merges two files
+ * Appends contents of second file to first file
+ */
+int flmerge(char *file_one, char *file_two){
+    FILE *f_one, *f_two;
+    char *line;
+    int err_code = 1;
+    if ((line = malloc(sizeof(char *) * 100)) == NULL){
+        return 0;
+    }
+    if (((f_one = fopen(file_one, "a")) == 0) || ((f_two = fopen(file_two, "r")) == 0))
+        return 0;
+    while (!feof(f_two)){
+        line = flreadline(f_two);
+        if (flappend(file_one, line) == 0){
+            err_code = 0;
+            break;
+        }
+    }
+    fclose(f_one);
+    fclose(f_two);
+    return err_code;
+}
+
+/* -------------------- CONVERSIONS -------------------- */
 
 /*
  * Function: Converts text to uppercase
@@ -104,14 +218,7 @@ char *itos(long long int num){
     return str;
 }
 
-/*
- * Function: Returns array of length
- * arrsize is (number of element * sizeof(int))
- * so number of element(arrlen) is arrsize / sizeof(int)
- */
-int arrlen(int arrsize){
-    return (arrsize / sizeof(int));
-}
+/* -------------------- INTS AND FLOATS -------------------- */
 
 /*
  * Function: Checks int array for int
@@ -155,26 +262,7 @@ int intlen(int number){
     return len;
 }
 
-/*
- * Function: Searches for text in file
- * Searches file line by line for text
- * Returns 1 if text is in file
- * Returns 0 if file doesn't exist or text isn't in file
- */
-int infile(char *file_name, char *text){
-    char line[100];
-    FILE *file;
-    if (!(file = fopen(file_name, "r"))){ // Opens and checks for file's existence 
-        fprintf(stderr, "\n File not found. \n");
-        return 0;
-    }
-    while (fscanf(file, "%99[^\n]\n", line) == 1){ // Read file line by line
-        if (strstr(line, text)) // Checks if text is present in line
-            return 1;
-    }
-    fclose(file);
-    return 0;
-}
+
 
 /*
  * Function: Returns maximum int from array
@@ -211,39 +299,6 @@ int minint(int *arr, int arrsize){
  * Compares values of arr[index] and arr[index + 1]
  * If returned value is > 0, swap values
  */
-void strsort(char **arr, int size){
-    char *temp;
-    if ((temp = malloc(sizeof(char *))) == NULL)
-        error("Can't allocate storage on heap");
-    int i, j, arrsize = arrlen(size);
-    for (i = 0; i < arrsize; ++i){
-        for (j = 0; j < arrsize - 1; ++j){
-            if (strcmp(arr[j], arr[j + 1]) > 0){ // Compares arr[j] and arr[j + 1]
-                strswap(&arr[j], &arr[j + 1]);
-            }
-        }
-    }
-}
-
-/*
- * Function: Sorts array of int
- * Compares values of arr[index] and arr[index + 1]
- * If arr[index] > arr[index + 1], swaps values
- */
-void intsort(int *arr, int size){
-    int arrsize = arrlen(size); // size is sizeof(arr)
-    int temp, i, j;
-    for (i = 0; i < arrsize; ++i){
-        for (j = 0; j < arrsize - 1; ++j){
-            if (arr[j] > arr[j + 1]){ // Compares arr[j] and arr[j + 1]
-                // Swaps arr[j] and arr[j + 1] if true
-                temp = arr[j];
-                arr[j] = arr[j + 1];
-                arr[j + 1] = temp;
-            }
-        }
-    }
-}
 
 /*
  * Function: Calculates sum of elements of int array
@@ -297,6 +352,53 @@ double flmultiply(double *arr, int size){
     return multiply;
 }
 
+/* -------------------- SORTING -------------------- */
+
+void strsort(char **arr, int size){
+    char *temp;
+    if ((temp = malloc(sizeof(char *))) == NULL)
+        error("Can't allocate storage on heap");
+    int i, j, arrsize = arrlen(size);
+    for (i = 0; i < arrsize; ++i){
+        for (j = 0; j < arrsize - 1; ++j){
+            if (strcmp(arr[j], arr[j + 1]) > 0){ // Compares arr[j] and arr[j + 1]
+                strswap(&arr[j], &arr[j + 1]);
+            }
+        }
+    }
+}
+
+/*
+ * Function: Sorts array of int
+ * Compares values of arr[index] and arr[index + 1]
+ * If arr[index] > arr[index + 1], swaps values
+ */
+void intsort(int *arr, int size){
+    int arrsize = arrlen(size); // size is sizeof(arr)
+    int temp, i, j;
+    for (i = 0; i < arrsize; ++i){
+        for (j = 0; j < arrsize - 1; ++j){
+            if (arr[j] > arr[j + 1]){ // Compares arr[j] and arr[j + 1]
+                // Swaps arr[j] and arr[j + 1] if true
+                temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+
+/* -------------------- ARRAYS -------------------- */
+
+/*
+ * Function: Returns array of length
+ * arrsize is (number of element * sizeof(int))
+ * so number of element(arrlen) is arrsize / sizeof(int)
+ */
+int arrlen(int arrsize){
+    return (arrsize / sizeof(int));
+}
+
 /*
  * Function: Creates array of int values
  * Creates variadic list ap
@@ -343,144 +445,6 @@ char **strarr(int args, ...){
 }
 
 /*
- * Function: Returns current time in string format
- * Gets localtime using localtime()
- * Returns time in ASCII format
- */
-char *timenow(){
-    time_t t; // Creates variable t of type time_t to store current time
-    time (&t);  // Stores current time in variable 't'
-    return asctime(localtime(&t)); // Returns localtime in ASCII format
-}
-
-/*
- * Function: Writes text to file
- * Creates/Opens a file with file_name in write mode
- * Writes to file and closes
- */
-void flwrite(char *file_name, char *text){
-    FILE *fp;
-    if ((fp = fopen(file_name, "w")) == NULL)
-        error("Can't create file");
-    fprintf(fp, "%s", text);
-    fclose(fp);
-}
-
-/*
- * Function: Appends text to file
- * Opens a file with file_name in append mode,
- * creates new if doesn't exist
- * Appends/writes to file, closes file
- */
-void flappend(char *file_name, char *text){
-    FILE *fp; // Creates a FILE pointer
-    if ((fp = fopen(file_name, "a")) == NULL)
-        fp = fopen(file_name, "w");
-    fprintf(fp, "%s", text);
-    fclose(fp);
-}
-
-/*
- * Function: Reads a file line by line
- * Attempts to open file, returns 0 if file doesn't exist
- * Reads lines from file till NULL
- */
-int flread(char *file_name){
-    char line[100];
-    FILE *fp;
-    if ((fp = fopen(file_name, "r")) == NULL){
-        return 0;
-    }
-    while (fscanf(fp, "%99[^\n]\n", line) == 1)
-        printf("\n %s",line);
-    fclose(fp);
-    return 1; // Returns 1 on success
-}
-
-/* 
- * Function: Reads next line from file
- * Returns next line from file
- */
-char *flreadline(FILE *fp){
-    char *line;
-    if ((line = malloc(sizeof(char *) * 100)) == NULL)
-        error("Can't allocate storage on heap");
-    fscanf(fp, "%99[^\n]\n", line);
-    return line;
-}
-
-/* 
- * Function: Opens webpage in browser
- * Opens webpage with url using system
- */
-void open_url(char *url){
-    char cmd[100];
-    sprintf(cmd, "cmd /c start %s",url); 
-    system(cmd); // Opens webpage on Windows
-    sprintf(cmd, "x-www-browser '%s' &",url);
-    system(cmd); // Opens webpage on Linux
-    sprintf(cmd, "open %s",url);
-    system(cmd); // Opens webpage on Mac
-}
-
-/* 
- * Function: Catches signal from keyboard
- * Takes signal number and a function as args
- * Creates struct variable
- * Assigns signal handler to function 'handler'
- * Sets additional flags to 0
- * Returns action
- */
-int catch_signal(int sig, void (*handler)(int)){
-    struct sigaction action; // Creates a struct action
-    action.sa_handler = handler; // Sets handler function
-    sigemptyset(&action.sa_mask);
-    action.sa_flags = 0; // Sets additional flags to 0
-    return sigaction(sig, &action, NULL); // Returns action
-}
-
-/*
- * Function: Useful function to display error message and terminate program
- */
-void error(char *msg){
-    fprintf(stderr, " %s : %s\n",msg,strerror(errno)); // Display msg with error type and details
-    exit(1); // Exit with code 1
-}
-
-/*
- * Function: Swaps data streams 
- * Takes n_desc(new descriptor) and std_desc(standard descriptor) as arg
- * Swapping streams:
- * Creates duplicate standard descriptor to file's descriptor
- * Creates duplicate new descriptor to previous standard descriptor
- * Creates duplicate standard descriptor to n_desc(Previously new descriptor)
- * Swap complete
- * err_code set to -1 if task failed, else 1
- * Returns err_code
- */
-int swapstream(int n_desc, int std_desc){
-    FILE *fp = fopen("temp.txt","w");
-    int err_code = ((dup2(std_desc, fileno(fp)) == -1) || (dup2(n_desc, std_desc) == -1) || (dup2(fileno(fp), n_desc) == -1)) ? -1 : 1; // Swaps stream and checks for errors
-    fclose(fp);
-    system("rm temp.txt");
-    return err_code;
-}
-
-/*
- * Function: Redirects data stream
- * Takes n_desc(new descriptor) and std_desc(standard descriptor) as arg
- * Redirecting streams:
- * Creates duplicate n_desc to std_desc
- * Redirect complete
- * err_code set to -1 if task failed, else 1
- * Returns err_code
- */
-int redstream(int n_desc, int std_desc){
-    int err_code = (dup2(n_desc, std_desc) == -1) ? -1 : 1; // Redirects stream and checks for errors
-    return err_code; // Returns error code
-}
-
-/*
  * Function: Splits a string and returns an array of strings/pointers
  * Takes str(char pointer) and split_char(char) as arg
  * Goes through each character of str
@@ -515,40 +479,7 @@ char **split(char *str, char split_char){
     return split_str;
 }
 
-/*
- * Function: Pauses a program
- * Displays msg and waits for char input
- */
-void ppause(char *msg){
-    printf("\n %s",msg);
-    getchar();
-}
-
-/*
- * Function: Delays or pauses program for 'n' second
- * Uses sleep function to sleep program
- */
-void psleep(int second){
-    printf("\n");
-    if (OS) sleep(second); // sleep in Linux and other OS
-    else Sleep(second * 1000); // Sleep in Windows
-}
-
-/*
- * Function: Clears console screen
- * Uses system function to clear console screen
- */
-void clear(){
-    if (OS) system("clear"); // Clears console screen in Linux and other OS
-    else system("cls"); // Clears console screen in Windows
-}
-
-/*
- * Function: Useful function to display failure message
- */
-void failure(char *msg){
-    fprintf(stderr, " %s : %s\n",msg,strerror(errno)); // Display msg with error type and details
-}
+/* -------------------- SWAP -------------------- */
 
 /*
  * Function: Swaps two strings
@@ -588,6 +519,19 @@ void flswap(float *fl_one, float *fl_two){
     fl_temp = *fl_one;
     *fl_one = *fl_two;
     *fl_two = fl_temp;
+}
+
+/* -------------------- TIME -------------------- */
+
+/*
+ * Function: Returns current time in string format
+ * Gets localtime using localtime()
+ * Returns time in ASCII format
+ */
+char *timenow(){
+    time_t t; // Creates variable t of type time_t to store current time
+    time (&t);  // Stores current time in variable 't'
+    return asctime(localtime(&t)); // Returns localtime in ASCII format
 }
 
 /*
@@ -659,4 +603,114 @@ int getyday(){
     return ((struct tm *) tstruct())->tm_yday + 1;
 }
 
+/* -------------------- DATA STREAMS -------------------- */
 
+/*
+ * Function: Swaps data streams 
+ * Takes n_desc(new descriptor) and std_desc(standard descriptor) as arg
+ * Swapping streams:
+ * Creates duplicate standard descriptor to file's descriptor
+ * Creates duplicate new descriptor to previous standard descriptor
+ * Creates duplicate standard descriptor to n_desc(Previously new descriptor)
+ * Swap complete
+ * err_code set to -1 if task failed, else 1
+ * Returns err_code
+ */
+int swapstream(int n_desc, int std_desc){
+    FILE *fp = fopen("temp.txt","w");
+    int err_code = ((dup2(std_desc, fileno(fp)) == -1) || (dup2(n_desc, std_desc) == -1) || (dup2(fileno(fp), n_desc) == -1)) ? -1 : 1; // Swaps stream and checks for errors
+    fclose(fp);
+    system("rm temp.txt");
+    return err_code;
+}
+
+/*
+ * Function: Redirects data stream
+ * Takes n_desc(new descriptor) and std_desc(standard descriptor) as arg
+ * Redirecting streams:
+ * Creates duplicate n_desc to std_desc
+ * Redirect complete
+ * err_code set to -1 if task failed, else 1
+ * Returns err_code
+ */
+int redstream(int n_desc, int std_desc){
+    int err_code = (dup2(n_desc, std_desc) == -1) ? -1 : 1; // Redirects stream and checks for errors
+    return err_code; // Returns error code
+}
+
+/* -------------------- ERROR HANDLING -------------------- */
+
+/*
+ * Function: Useful function to display error message and terminate program
+ */
+void error(char *msg){
+    fprintf(stderr, " %s : %s\n",msg,strerror(errno)); // Display msg with error type and details
+    exit(1); // Exit with code 1
+}
+
+/*
+ * Function: Useful function to display failure message
+ */
+void failure(char *msg){
+    fprintf(stderr, " %s : %s\n",msg,strerror(errno)); // Display msg with error type and details
+}
+
+/* -------------------- SYSTEM FUNCTIONS -------------------- */
+
+/* 
+ * Function: Opens webpage in browser
+ * Opens webpage with url using system
+ */
+void openurl(char *url){
+    char cmd[100];
+    sprintf(cmd, "cmd /c start %s",url); 
+    system(cmd); // Opens webpage on Windows
+    sprintf(cmd, "x-www-browser '%s' &",url);
+    system(cmd); // Opens webpage on Linux
+    sprintf(cmd, "open %s",url);
+    system(cmd); // Opens webpage on Mac
+}
+
+/* 
+ * Function: Catches signal from keyboard
+ * Takes signal number and a function as args
+ * Creates struct variable
+ * Assigns signal handler to function 'handler'
+ * Sets additional flags to 0
+ * Returns action
+ */
+int catchsignal(int sig, void (*handler)(int)){
+    struct sigaction action; // Creates a struct action
+    action.sa_handler = handler; // Sets handler function
+    sigemptyset(&action.sa_mask);
+    action.sa_flags = 0; // Sets additional flags to 0
+    return sigaction(sig, &action, NULL); // Returns action
+}
+
+/*
+ * Function: Pauses a program
+ * Displays msg and waits for char input
+ */
+void ppause(char *msg){
+    printf("\n %s",msg);
+    getchar();
+}
+
+/*
+ * Function: Delays or pauses program for 'n' second
+ * Uses sleep function to sleep program
+ */
+void psleep(int second){
+    printf("\n");
+    if (OS) sleep(second); // sleep in Linux and other OS
+    else Sleep(second * 1000); // Sleep in Windows
+}
+
+/*
+ * Function: Clears console screen
+ * Uses system function to clear console screen
+ */
+void clear(){
+    if (OS) system("clear"); // Clears console screen in Linux and other OS
+    else system("cls"); // Clears console screen in Windows
+}
