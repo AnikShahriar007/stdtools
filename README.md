@@ -1,7 +1,7 @@
 # C stdtools Readme #
 
 **Name         :** stdtools  
-**Version      :** 0.4.3.7  
+**Version      :** 0.5.1.4  
 **Contributors :** Anonymous883  
 
 **stdtools** is a custom C library containing a number of useful c functions.
@@ -13,6 +13,16 @@
 **stdtools** is made open-source for the help of other programmers. Feel free to use it, and of course contributing in it. If you can upgrade any function, modify it to run in efficient ways, please go ahead. The more function it contains, the better for others.
 
 ## Changelog ##
+
+  ### 0.5 ###
+  * Added new function 'flmerge'
+  * Removed use of 'error' function from 'flwrite' and 'flappend'
+  * Changed return type of 'flwrite' and 'flappend' to int from void
+  * Modified 'flread' to use 'flreadline'
+  * Modified 'flreadline' to read line using fgets
+  * Reorganized functions according to task
+  * Changed name of function 'open_url' to 'openurl'
+  * Changed name of function 'catch_signal' to 'catchsignal'
 
   ### 0.4 ###
   * Added new function 'tstruct'
