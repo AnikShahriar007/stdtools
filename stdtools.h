@@ -5,13 +5,15 @@ int flwrite(char *file_name, char *text); // Writes text to file
 int flappend(char *file_name, char *text); // Appends text to file; Creates new if !exist
 int flread(char *file_name); // Reads and printf from file; Returns 0 if file doesn't exist
 char *flreadline(FILE *fp); // Reads next line from file
-int infile(char *file_name, char *text); // Searches file for text
+int flsearch(char *file_name, char *text); // Searches file for text
 int flmerge(char *file_one, char *file_two); // Merges two files
+void fldelete(char *file_name); // Deletes a file
+int flcat(char *file_one, char *file_two); // Appends text of file_one to file_two
+int flcopy(char *file_one, char *file_two); // Writes text of file_one to file_two
+int flmove(char *file_one, char *file_two); // Moves a file
+int fllinecount(char *file_name); // Returns number of lines present in a file
 
 /* -------------------- CONVERSIONS -------------------- */
-char *uppercase(char *text); // Returns upper-cased version of text
-char *lowercase(char *text); // Returns lower-cased version of text
-char *reverse(char *text); // Returns reversed-version of text
 char *itos(long long int number); // Converts long-long-int to string
 
 /* -------------------- INTS AND FLOATS -------------------- */
@@ -24,20 +26,31 @@ long long int multiply(int *arr, int arrsize); // Returns multipli. of elements 
 double flsum(double *arr, int size); // Returns sum of elements of double array
 double flmultiply(double *arr, int size); // Returns multipli. of elements of double array
 
+/* -------------------- STRING MANIPULATION -------------------- */
+char *uppercase(char *text); // Returns upper-cased version of text
+char *lowercase(char *text); // Returns lower-cased version of text
+char *reverse(char *text); // Returns reversed-version of text
+char **split(char *str, char split_char); // Splits a string and returns an array of strings
+char *replace(char *text, char old_char, char new_char); // Replaces old char with new char in text
+char *substring(char *str, int start_index, int end_index); // Returns substring containing chars of str in range
+int wordcount(char *text); // Returns number of words present in text 
+int charcount(char *text); // Returns number of chars present in text
+int charoccur(char *text, char chr); // Returns number of occurence of chr in text
+
 /* -------------------- SORTING -------------------- */
 void strsort(char **arr, int arrsize); // Sorts array of string / pointers in ascending
 void intsort(int *arr, int size); // Sorts array of int in ascending
 
 /* -------------------- ARRAYS -------------------- */
 int arrlen(int arrsize); // Returns length of int array, takes sizeof(array) as parameter
-int *intarr(int args, ...); // Returns array with args int
+int *intearr(int args, ...); // Returns array with args int
 char **strarr(int args, ...); // Returns array with args str
-char **split(char *str, char split_char); // Splits a string and returns an array of strings
 
 /* -------------------- SWAP -------------------- */
 void strswap(char **str_one, char **str_two); // Swaps two strings
 void intswap(int *int_one, int *int_two); // Swaps two ints
 void flswap(float *fl_one, float *fl_two); // Swaps two floats
+void charswap(char *chr_a, char *chr_b); // Swaps two characters
 
 /* -------------------- TIME -------------------- */
 char *timenow(); // Returns string of current time
@@ -65,3 +78,5 @@ int catchsignal(int sig, void (*handler)(int)); // Catches and handles signals
 void ppause(char *msg); // Pauses a program; Waits for user input (char)
 void psleep(int second); // Delays or pauses program for n second (n == second(arg))
 void clear(); // Clears console screen
+
+
