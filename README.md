@@ -1,7 +1,7 @@
 # C stdtools Readme #
 
 **Name         :** stdtools  
-**Version      :** 0.5.1.4  
+**Version      :** 0.6.1.3  
 **Contributors :** Anonymous883  
 
 **stdtools** is a custom C library containing a number of useful c functions.
@@ -14,6 +14,10 @@
 
 ## Changelog ##
 
+  ### 0.6 ###
+  * Added new function 'flcat'
+  * Modified function 'flcopy' to use 'flcat' and 'fldelete'
+
   ### 0.5 ###
   * Added new function 'flmerge'
   * Removed use of 'error' function from 'flwrite' and 'flappend'
@@ -23,6 +27,31 @@
   * Reorganized functions according to task
   * Changed name of function 'open_url' to 'openurl'
   * Changed name of function 'catch_signal' to 'catchsignal'
+  * Added new function 'replace'
+  * Used variable 'str' to create duplicate of text with strdup in 'uppercase'
+  * Used variable 'str' to create duplicate of text with strdup in 'lowercase'
+  * Used variable 'str' to create duplicate of text with strdup in 'reverse'
+  * Used variable 'str' to create duplicate of text with strdup in 'replace'
+  * Added new function 'charswap'
+  * Modified 'reverse' to use 'charswap'
+  * Added new function 'substring'
+  * Renamed 'infile' to 'flsearch'
+  * Added new function 'fldelete'
+  * Added new function 'flcopy'
+  * Added new function 'flmove'
+  * Optimized 'flcopy' by removing extra memory allocation and freeing memory
+  * Optimized 'flreadline' by removing extra memory allocation and freeing memory
+  * Optimized 'flread' by freeing memory
+  * Optimized 'flsearch' by freeing memory
+  * Modified 'flsearch' to use 'flreadline'
+  * Optimized 'flmerge' by removing extra memory allocation and freeing memory
+  * Optimized 'strsort' by removing extra memory allocation
+  * Optimized 'strswap' by freeing memory
+  * Added new function 'casechange'
+  * Added new function 'wordcount'
+  * Added new function 'charcount'
+  * Added new function 'charoccur'
+  * Added new function 'fllinecount'
 
   ### 0.4 ###
   * Added new function 'tstruct'

@@ -7,7 +7,7 @@
  *                C tools for reducing development time and 
  *                for faster production.
  *
- *      Version : 0.5.1.4
+ *      Version : 0.6.1.3
  *      Created : 12 December, 2017
  *     Compiler : gcc
  *
@@ -70,13 +70,16 @@ int flappend(char *file_name, char *text){
  * Reads lines from file till NULL
  */
 int flread(char *file_name){
-    char line[100];
+    char *line;
     FILE *fp;
     if ((fp = fopen(file_name, "r")) == NULL){
         return 0;
     }
-    while (!feof(fp))
-        printf("%s",flreadline(fp));
+    while (!feof(fp)){
+        line = flreadline(fp);
+        printf("%s",line);
+        free(line);
+    }
     fclose(fp);
     return 1;
 }
@@ -88,9 +91,7 @@ int flread(char *file_name){
 char *flreadline(FILE *fp){
     char line[100];
     char *rline;
-    if ((rline = malloc(sizeof(char *) * 100)) == NULL)
-        error("Can't allocate storage on heap");
-    if (fgets(line, 100, fp) == NULL)
+     if (fgets(line, 100, fp) == NULL)
         error("Can't read line");
     rline = strdup(line);
     return rline;
@@ -99,19 +100,21 @@ char *flreadline(FILE *fp){
 /*
  * Function: Searches for text in file
  * Searches file line by line for text
- * Returns 1 if text is in file
- * Returns 0 if file doesn't exist or text isn't in file
  */
-int infile(char *file_name, char *text){
-    char line[100];
+int flsearch(char *file_name, char *text){
+    char *line;
     FILE *file;
-    if (!(file = fopen(file_name, "r"))){ // Opens and checks for file's existence 
-        fprintf(stderr, "\n File not found. \n");
+    if (!(file = fopen(file_name, "r"))){ 
         return 0;
     }
-    while (fscanf(file, "%99[^\n]\n", line) == 1){ // Read file line by line
-        if (strstr(line, text)) // Checks if text is present in line
+    while (!feof(file)){ 
+        line = flreadline(file);
+        if (strstr(line, text)){
+            fclose(file);
+            free(line);
             return 1;
+        }
+        free(line);
     }
     fclose(file);
     return 0;
@@ -125,89 +128,90 @@ int flmerge(char *file_one, char *file_two){
     FILE *f_one, *f_two;
     char *line;
     int err_code = 1;
-    if ((line = malloc(sizeof(char *) * 100)) == NULL){
-        return 0;
-    }
     if (((f_one = fopen(file_one, "a")) == 0) || ((f_two = fopen(file_two, "r")) == 0))
         return 0;
     while (!feof(f_two)){
         line = flreadline(f_two);
         if (flappend(file_one, line) == 0){
+            free(line);
             err_code = 0;
             break;
         }
+        free(line);
     }
     fclose(f_one);
     fclose(f_two);
     return err_code;
 }
 
+void fldelete(char *file_name){
+    char cmd[100], *delcmd = (OS) ? "rm" : "del";
+    sprintf(cmd, "%s %s", delcmd, file_name);
+    system(cmd);
+}
+
+/*
+ * Function: Appends text of file_one to file_two
+ */
+int flcat(char *file_one, char *file_two){
+    char *line;
+    FILE *f_one;
+    if ((f_one = fopen(file_one, "r")) == NULL)
+        return 0;
+    while (!feof(f_one)){
+        line = flreadline(f_one);
+        if (flappend(file_two, line) == 0){
+            free(line);
+            return 0;
+        }
+        free(line);
+    }
+    fclose(f_one);
+    return 1;
+}
+
+/*
+ * Function: Writes text of file_one to file_two
+ */
+int flcopy(char *file_one, char *file_two){
+    fldelete(file_two);
+    if (flcat(file_one, file_two) == 0)
+        return 0;
+    return 1;
+}
+
+/*
+ * Function: Moves a file
+ */
+int flmove(char *file_one, char *file_two){
+    if (flcopy(file_one, file_two) == 0)
+        return 0;
+    fldelete(file_one);
+    return 1;
+}
+
+/*
+ * Function: Returns number of lines present in a file
+ */
+int fllinecount(char *file_name){
+    int line_count = 0;
+    char *line;
+    FILE *file;
+    if ((file = fopen(file_name, "r")) == NULL)
+        return -1;
+    while (!feof(file)){
+        line = flreadline(file);
+        free(line);
+        ++line_count;
+    }
+    fclose(file);
+    return line_count;
+}
+
 /* -------------------- CONVERSIONS -------------------- */
 
 /*
- * Function: Converts text to uppercase
- * Checks if character of char pointer 'text' is between 'a' - 'z'
- * Assigns uppercase format of char to 'str' by subtracting 32 if true
- * Else, assigns default char tonn 'str'
- */
-char *uppercase(char *text){
-    char *str;
-    if ((str = malloc(strlen(text) + 1)) == NULL)
-        error("Can't allocate storage on heap");
-    int i = 0;
-    while (*text){ // If *text(char) is not NULL(\0) or 0
-        if ((*text >= 'a') && (*text <= 'z')) // Check if char is in lowercase
-            *(str + i) = *text - 32; // Convert to uppercase 
-        else
-            *(str + i) = *text; // Assign default char
-        ++i;
-        ++text; // Go to next char
-    }
-    return str;
-}
-
-/*
- * Function: Converts text to lowercase
- * Checks if character of char pointer 'text' is between 'A' - 'Z'
- * Assigns lowercase format of char to 'str' by adding 32 if true
- * Else, assigns default char to str
- */
-char *lowercase(char *text){
-    char *str;
-    if ((str = malloc(strlen(text) + 1)) == NULL)
-        error("Can't allocate storage on heap");
-    int i = 0;
-    while (*text){ // If *text(char) is not NULL(\0) or 0
-        if ((*text >= 'A') && (*text <= 'Z')) 
-            *(str + i) = *text + 32; // Convert char to lowercase
-        else
-            *(str + i)= *text; // Assign default char
-        ++i;
-        ++text; // Go to next char
-    }
-    return str;
-}
-
-/*
- * Function: Reverses a string
- * Assigns value from the end of 'text' to the beginning of 'reverse_str'
- */
-char *reverse(char *text){
-    char *reverse_str;
-    if ((reverse_str = malloc(strlen(text) + 1)) == NULL)
-        error("Can't allocate storage on heap");
-    int len = strlen(text) - 1, i = 0;
-    while (len >= 0){
-        // Assign char from end of text to start of reverse_str
-        *(reverse_str + i) = *(text + len);
-        --len;
-        ++i;
-    }
-    return reverse_str;
-}
-
-/*
- * Function: Convert int to string
+ * Function: Convert int to string (Need to free memory)
  * prints value of int num using sprintf to str
  */
 char *itos(long long int num){
@@ -261,8 +265,6 @@ int intlen(int number){
         len = 0; // Length is 0 if number is 0
     return len;
 }
-
-
 
 /*
  * Function: Returns maximum int from array
@@ -352,12 +354,162 @@ double flmultiply(double *arr, int size){
     return multiply;
 }
 
+/* -------------------- STRING MANIPULATION -------------------- */
+
+/*
+ * Function: Converts text to uppercase
+ * Checks if character of char pointer 'str' is between 'a' - 'z'
+ * Subtracts 32 from char if true
+ */
+char *uppercase(char *text){
+    char *str = strdup(text);
+    int i = 0;
+    while (str[i]){
+        if ((str[i] >= 'a') && (str[i] <= 'z'))
+	    str[i] -= 32;
+        ++i;
+    }
+    return str;
+}
+
+/*
+ * Function: Converts text to lowercase
+ * Checks if character of char pointer 'str' is between 'A' - 'Z'
+ * Assigns lowercase format of char to 'str' by adding 32 if true
+ * Else, assigns default char to str
+ */
+char *lowercase(char *text){
+    char *str = strdup(text);
+    int i = 0;
+    while (str[i]){
+        if ((str[i] >= 'A') && (str[i] <= 'Z')) 
+            str[i] += 32;
+        ++i;
+    }
+    return str;
+}
+
+/*
+ * Function: Reverses a string
+ * Swaps chars from the end of 'text' to the beginning of 'text'
+ */
+char *reverse(char *text){
+    char *str = strdup(text);
+    int len = strlen(text) - 1, i = 0, j = len;
+    len += (len % 2 == 0) ? 0 : 1;
+    len /= 2;
+    while (len >= 0){
+	charswap(&str[j], &str[i]);
+        --len;
+	--j;
+        ++i;
+    }
+    return str;
+}
+
+/*
+ * Function: Splits a string and returns an array of strings/pointers
+ * Goes through each character of str
+ * Assigns each char to array of pointer/strings
+ * If character == split_char, current string ends
+ * Allocates storage for new strings
+ * Returns array of string/pointers
+ */
+char **split(char *str, char split_char){
+    char **split_str;
+    if ((split_str = malloc(sizeof(char *) * 1000)) == NULL)
+        error("Can't allocate storage on heap");
+    int len = strlen(str);
+    int s_str_index = 0, char_index = 0, str_index = 0;
+    *(split_str + s_str_index) = malloc(sizeof(char *)); // Allocates storage for first string of array
+    while (*str){ // Loops until *str/char of str is not NULL or '\0'(0)
+        if (*str == '\n') break; // Checks if char of str is last and char is '\n'
+        if (*str != split_char){
+            *(*(split_str + s_str_index) + char_index) = *str; // Assigns char of 'str' to char of index 'char_index' of string of index 's_str_index' 
+            ++char_index; // Sets next character's index
+        }
+        else{
+            ++s_str_index; // Sets next string's index
+            char_index = 0; // Sets next character's index to 0
+            if (str_index + 1 != len){ 
+                *(split_str + s_str_index) = malloc(sizeof(char *)); // Allocates storage in array for new string
+            }
+        }
+        ++str;
+        ++str_index;
+    }
+    return split_str;
+}
+
+/*
+ * Function: Replaces character in string
+ */
+char *replace(char *text, char old_char, char new_char){
+    char *str = strdup(text);
+    int i = 0;
+    while (str[i]){
+        if (str[i] == old_char)
+            str[i] = new_char;
+        ++i;
+    }
+    return str;
+}
+
+/*
+ * Function: Returns substring containing char of str in range
+ */
+char *substring(char *str, int start_index, int end_index){
+    char *substr;
+    size_t len = strlen(str);
+    int i = 0;
+    if ((len < start_index) || (len < end_index) || (start_index > end_index)) return "";
+    if ((substr = malloc(end_index - start_index)) == NULL)
+        error("Can't allocate storage on heap");
+    while (start_index <= end_index)
+        *(substr + i++) = *(str + start_index++);
+    return substr;
+}
+
+/*
+ * Function: Returns number of words present in text
+ */
+
+int wordcount(char *text){
+    int word_count = 0;
+    while (*text){
+        if (*text++ == ' ')
+            ++word_count;
+    }
+    return ++word_count;
+}
+
+/*
+ * Function: Returns number of chars present in text
+ */
+
+int charcount(char *text){
+    int char_count = 0;
+    while (*text++)
+        ++char_count;
+    return char_count;
+}
+
+/*
+ * Function: Returns number of occurence of chr in text
+ */
+
+int charoccur(char *text, char chr){
+    int char_occur_count = 0;
+    while (*text){
+        if (*text++ == chr)
+            ++char_occur_count;
+    }
+    return char_occur_count;
+}
+
 /* -------------------- SORTING -------------------- */
 
 void strsort(char **arr, int size){
-    char *temp;
-    if ((temp = malloc(sizeof(char *))) == NULL)
-        error("Can't allocate storage on heap");
     int i, j, arrsize = arrlen(size);
     for (i = 0; i < arrsize; ++i){
         for (j = 0; j < arrsize - 1; ++j){
@@ -444,48 +596,10 @@ char **strarr(int args, ...){
     return arr;
 }
 
-/*
- * Function: Splits a string and returns an array of strings/pointers
- * Takes str(char pointer) and split_char(char) as arg
- * Goes through each character of str
- * Assigns each char to array of pointer/strings
- * If character == split_char, current string ends
- * Allocates storage for new strings
- * Returns array of string/pointers
- */
-char **split(char *str, char split_char){
-    char **split_str;
-    if ((split_str = malloc(sizeof(char *) * 1000)) == NULL)
-        error("Can't allocate storage on heap");
-    int len = strlen(str);
-    int s_str_index = 0, char_index = 0, str_index = 0;
-    *(split_str + s_str_index) = malloc(sizeof(char *)); // Allocates storage for first string of array
-    while (*str){ // Loops until *str/char of str is not NULL or '\0'(0)
-        if (*str == '\n') break; // Checks if char of str is last and char is '\n'
-        if (*str != split_char){
-            *(*(split_str + s_str_index) + char_index) = *str; // Assigns char of 'str' to char of index 'char_index' of string of index 's_str_index' 
-            ++char_index; // Sets next character's index
-        }
-        else{
-            ++s_str_index; // Sets next string's index
-            char_index = 0; // Sets next character's index to 0
-            if (str_index + 1 != len){ 
-                *(split_str + s_str_index) = malloc(sizeof(char *)); // Allocates storage in array for new string
-            }
-        }
-        ++str;
-        ++str_index;
-    }
-    return split_str;
-}
-
 /* -------------------- SWAP -------------------- */
 
 /*
  * Function: Swaps two strings
- * Assigns str_one to str_temp
- * Assigns str_two to str_one
- * Assigns str_temp to str_two
  */
 void strswap(char **str_one, char **str_two){
     int max_len = (strcmp(*str_one, *str_two) > 0) ? strlen(*str_one) : strlen(*str_two);
@@ -493,13 +607,11 @@ void strswap(char **str_one, char **str_two){
     str_temp = *str_one;
     *str_one = *str_two;
     *str_two = str_temp;
+    free(str_temp);
 }
 
 /*
  * Function: Swaps two ints
- * Assigns value of int_one to int_temp
- * Assigns value of int_two to int_one
- * Assigns value of int_temp to int_two
  */
 void intswap(int *int_one, int *int_two){
     int int_temp;
@@ -510,15 +622,22 @@ void intswap(int *int_one, int *int_two){
 
 /*
  * Function: Swaps two floats
- * Assigns value of fl_one to fl_temp
- * Assigns value of fl_two to fl_one
- * Assigns value of fl_temp to fl_two
  */
 void flswap(float *fl_one, float *fl_two){
     float fl_temp;
     fl_temp = *fl_one;
     *fl_one = *fl_two;
     *fl_two = fl_temp;
+}
+
+/*
+ * Function: Swaps two characters
+ */
+void charswap(char *chr_a, char *chr_b){
+    char chr_temp;
+    chr_temp = *chr_a;
+    *chr_a = *chr_b;
+    *chr_b = chr_temp;
 }
 
 /* -------------------- TIME -------------------- */
@@ -714,3 +833,5 @@ void clear(){
     if (OS) system("clear"); // Clears console screen in Linux and other OS
     else system("cls"); // Clears console screen in Windows
 }
+
+
