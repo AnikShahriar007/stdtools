@@ -1,7 +1,7 @@
 # C stdtools Readme #
 
 **Name         :** stdtools  
-**Version      :** 0.6.1.3  
+**Version      :** 0.6.4.5  
 **Contributors :** Anonymous883  
 
 **stdtools** is a custom C library containing a number of useful c functions.
