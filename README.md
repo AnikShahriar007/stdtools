@@ -1,7 +1,7 @@
 # C stdtools Readme #
 
 **Name         :** stdtools  
-**Version      :** 0.6.1.3  
+**Version      :** 0.6.4.5  
 **Contributors :** Anonymous883  
 
 **stdtools** is a custom C library containing a number of useful c functions.
@@ -17,6 +17,26 @@
   ### 0.6 ###
   * Added new function 'flcat'
   * Modified function 'flcopy' to use 'flcat' and 'fldelete'
+  * Added new function 'dtos'
+  * Modified function 'itos' by changing variable name to 'number'
+  * Added new function 'power'
+  * Added new function 'flpow'
+  * Added new function 'factorial'
+  * Added new function 'isprime'
+  * Added new function 'degtorad'
+  * Added new function 'radtodeg'
+  * Added new function 'sinx'
+  * Added new function 'cosx'
+  * Added new function 'tanx'
+  * Added new function 'dectobin'
+  * Added new function 'dectooct'
+  * Added new function 'dectohex'
+  * Added new function 'bintodec'
+  * Added new function 'octtodec'
+  * Added new function 'hextodec'
+  * Added new function 'strinput'
+  * Added new function 'intinput'
+  * Added new function 'flinput'
 
   ### 0.5 ###
   * Added new function 'flmerge'
@@ -79,3 +99,4 @@
 
   ### 0.1 ###
   * First attempt to stdtools. 
+

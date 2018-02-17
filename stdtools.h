@@ -12,9 +12,11 @@ int flcat(char *file_one, char *file_two); // Appends text of file_one to file_t
 int flcopy(char *file_one, char *file_two); // Writes text of file_one to file_two
 int flmove(char *file_one, char *file_two); // Moves a file
 int fllinecount(char *file_name); // Returns number of lines present in a file
+int flcharcount(char *file_name); // Returns number of chars present in a file
 
 /* -------------------- CONVERSIONS -------------------- */
 char *itos(long long int number); // Converts long-long-int to string
+char *dtos(double number); // Converts double to string
 
 /* -------------------- INTS AND FLOATS -------------------- */
 int intint(int *arr, int n, int arrsize); // Searches array for int, returns 1 if found
@@ -25,6 +27,23 @@ long long int sum(int *arr, int arrsize); // Returns sum of elements of int arra
 long long int multiply(int *arr, int arrsize); // Returns multipli. of elements of int array
 double flsum(double *arr, int size); // Returns sum of elements of double array
 double flmultiply(double *arr, int size); // Returns multipli. of elements of double array
+
+/* -------------------- MATH FUNCTIONS -------------------- */
+long long int power(int base, int power); // Returns value of base^power in long-long-int
+double flpow(double base, int power); // Returns value of base^power in double
+int factorial(int number); // Returns factorial 
+int isprime(int number); // Checks if num is prime, returns 1 if prime, else 0
+double degtorad(double degree); // Returns radian value of angle converted from degree
+double radtodeg(double radian); // Returns degree value of angle converted from radian
+double sinx(double degree); // Returns value of sin(x) where x is angle in degree
+double cosx(double degree); // Returns value of cos(x) --------------------------
+double tanx(double degree); // Returns value of tan(x) --------------------------
+long long dectobin(int decimal);   // Converts decimal to binary
+long long dectooct(int decimal);   // ------------------- octal
+char *dectohex(int decimal); // ------------------- hexadecimal
+long long bintodec(long long binary); // Converts binary to decimal
+long long octtodec(long long octal);  // Converts octal  to decimal
+long long hextodec(char *hexadecimal); // Converts hexadecimal to decimal
 
 /* -------------------- STRING MANIPULATION -------------------- */
 char *uppercase(char *text); // Returns upper-cased version of text
@@ -43,7 +62,7 @@ void intsort(int *arr, int size); // Sorts array of int in ascending
 
 /* -------------------- ARRAYS -------------------- */
 int arrlen(int arrsize); // Returns length of int array, takes sizeof(array) as parameter
-int *intearr(int args, ...); // Returns array with args int
+int *intarr(int args, ...); // Returns array with args int
 char **strarr(int args, ...); // Returns array with args str
 
 /* -------------------- SWAP -------------------- */
@@ -68,6 +87,11 @@ int getyday(); // Returns day of year; Range : 1 - 365
 int swapstream(int n_desc, int std_desc); // Swaps standard streams with others
 int redstream(int n_desc, int std_desc); // Redirects standard streams
 
+/* -------------------- INPUTS -------------------- */
+void strinput(char *var, int buffer_size, char *text); // Takes input to str var
+void intinput(int *var, char *text); // Takes input to int pointer var
+void flinput(float *var, char *text); // Takes input to float pointer var
+
 /* -------------------- ERROR HANDLING -------------------- */
 void error(char *msg); // Displays error msg and exits program with exit code 1
 void failure(char *msg); // Displays task failure msg
@@ -78,5 +102,3 @@ int catchsignal(int sig, void (*handler)(int)); // Catches and handles signals
 void ppause(char *msg); // Pauses a program; Waits for user input (char)
 void psleep(int second); // Delays or pauses program for n second (n == second(arg))
 void clear(); // Clears console screen
-
-

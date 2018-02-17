@@ -1,15 +1,16 @@
 
 /* =============================================================
  *
- *     Filename : stdtools.c
+ *       FILENAME : stdtools.c
  *
- *  Description : A C library. Contains several useful small
+ *    DESCRIPTION : A C library. Contains several useful small
  *                C tools for reducing development time and 
  *                for faster production.
  *
- *      Version : 0.6.1.3
- *      Created : 12 December, 2017
- *     Compiler : gcc
+ *        VERSION : 0.6.4.5
+ *        CREATED : 12 December, 2017
+ *  LAST MODIFIED : 17 February, 2018
+ *       COMPILER : gcc
  *
  * =============================================================
  */
@@ -19,6 +20,7 @@
 #include <stdlib.h>   // Standard library functions
 #include <stdio.h>    // Command prompt I/O
 #include <stdarg.h>   // Standard argument handler
+#include <math.h>     // Math Functions
 #include <time.h>     // Time 
 #include <sys/signal.h>   // Signal handler
 #include <errno.h>    // Error number 
@@ -208,17 +210,47 @@ int fllinecount(char *file_name){
     return line_count;
 }
 
+/*
+ * Function: Returns number of chars present in a file
+ */
+int flcharcount(char *file_name){
+    int char_count = 0;
+    char *line;
+    FILE *file;
+    if ((file = fopen(file_name, "r")) == NULL)
+        return -1;
+    while (!feof(file)){
+        line = flreadline(file);
+        char_count += charcount(line);
+        free(line);
+    }
+    fclose(file);
+    return char_count;
+}
+
 /* -------------------- CONVERSIONS -------------------- */
 
 /*
  * Function: Convert int to string (Need to free memory)
  * prints value of int num using sprintf to str
  */
-char *itos(long long int num){
+char *itos(long long int number){
     char *str;
     if ((str = malloc(sizeof(char *) * 20)) == NULL)
         error("Can't allocate storage on heap");
-    sprintf(str, "%lld", num); // Prints value of num as string to str 
+    sprintf(str, "%lld", number); // Prints value of num as string to str 
+    return str;
+}
+
+/*
+ * Function: Converts double to string (Need to free memory)
+ * Prints value of double num using sprintf to str
+ */
+char *dtos(double number){
+    char *str;
+    if ((str = malloc(sizeof(char *) * 20)) == NULL)
+        error("Can't allocate storage on heap");
+    sprintf(str, "%lf", number); // Prints value of num as string to str
     return str;
 }
 
@@ -297,12 +329,6 @@ int minint(int *arr, int arrsize){
 }
 
 /*
- * Function: Sorts array of strings / pointers in alphabetical order.
- * Compares values of arr[index] and arr[index + 1]
- * If returned value is > 0, swap values
- */
-
-/*
  * Function: Calculates sum of elements of int array
  * Adds value of arr[index] to sum in each loop
  */
@@ -352,6 +378,183 @@ double flmultiply(double *arr, int size){
         multiply *= arr[i];
     }
     return multiply;
+}
+
+/* -------------------- MATH FUNCTIONS -------------------- */
+
+/*
+ * Function: Returns value of base^power
+ */
+long long int power(int base, int power){
+    int temp_base = base, i;
+    if (power == 0)
+        return 1;
+    for (i = 0; i < power - 1; ++i)
+        base *= temp_base;
+    return base;
+}
+
+/*
+ * Function: Returns value of base^power in double
+ */
+double flpow(double base, int power){
+    double temp_base = base;
+    int i;
+    if (power == 0)
+        return 1;
+    for (i = 0; i < power - 1; ++i)
+        base *= temp_base;
+    return base;
+}
+
+/*
+ * Function: Returns factorial
+ */
+int factorial(int number){
+    int i = 1;
+    int fact = 1;
+    for (; i <= number; ++i)
+        fact *= i;
+    return fact;
+}
+
+/* 
+ * Function: Checks if number is prime
+ * Returns 1 if prime, else 0
+ */
+int isprime(int number){
+    int i = 2;
+    for (; i < number; ++i){
+        if (number % i == 0)
+            return 0;
+    }
+    return 1;
+}
+
+/*
+ * Function: Returns radian value of angle converted from degree
+ */
+double degtorad(double degree){
+    return (degree * (3.141592654 / 180.0));
+}
+
+/*
+ * Function: Returns degree value of angle converted from radian
+ */
+double radtodeg(double radian){
+    return (radian * (180.0 / 3.141592654));
+}
+
+/*
+ * Function: Returns value of sin(x) where x is angle in degree
+ */
+double sinx(double degree){
+    float radian = degtorad(degree);
+    return (radian - (flpow(radian, 3) / (double) factorial(3)) + (flpow(radian, 5) /(double) factorial(5)) - (flpow(radian, 7) / (double) factorial(7)));
+}
+
+/*
+ * Function: Returns value of cos(x) where x is angle in degree
+ */
+double cosx(double degree){
+    return (sqrt(1 - flpow(sinx(degree), 2)));
+}
+
+/*
+ * Function: Returns value of tan(x) where x is angle in degree
+ */
+double tanx(double degree){
+    return (sinx(degree) / cosx(degree));
+}
+
+/*
+ * Function: Converts decimal to binary
+ */
+long long dectobin(int decimal){
+    long long binary = 0, base = 1;
+    while (decimal > 0){
+        binary += ((decimal % 2) * base);
+        decimal /= 2;
+        base *= 10;
+    }
+    return binary;
+}
+
+/*
+ * Function: Converts decimal to octal
+ */
+long long dectooct(int decimal){
+    long long octal = 0, base = 1;
+    while (decimal > 0){
+        octal += ((decimal % 8) * base);
+        decimal /= 8;
+        base *= 10;
+    }
+    return octal;
+}
+
+/*
+ * Function: Converts decimal to hexadecimal
+ */
+char *dectohex(int decimal){
+    char *hexadecimal = malloc(sizeof(char *));
+    char c;
+    int remainder, i = 0, len;
+    while (decimal > 0){
+        remainder = decimal % 16;
+        *(hexadecimal + i) = (remainder < 10) ? remainder + 48 : remainder + 55;
+        decimal /= 16;
+        ++i;
+    }
+    len = strlen(hexadecimal);
+    for (i = 0; i < len / 2; ++i){
+        c = *(hexadecimal + i);
+        *(hexadecimal + i) = *(hexadecimal + len - 1 - i);
+        *(hexadecimal + len - 1 - i) = c;
+    }
+    return hexadecimal;
+}
+
+/*
+ * Function: Converts binary to decimal
+ */
+long long bintodec(long long binary){
+    long long decimal = 0;
+    int i = 0;
+    while (binary > 0){
+        decimal += ((binary % 10) * pow(2, i));
+        ++i;
+        binary /= 10;
+    }
+    return decimal;
+}
+
+/* 
+ * Function: Converts octal to decimal
+ */
+long long octtodec(long long octal){
+    long long decimal = 0;
+    int i = 0;
+    while (octal > 0){
+        decimal += ((octal % 10) * pow(8, i));
+        ++i;
+        octal /= 10;
+    }
+    return decimal;
+}
+
+/* 
+ * Function: Converts hexadecimal to decimal
+ */
+long long hextodec(char *hexadecimal){
+    long long decimal = 0;
+    int len = strlen(hexadecimal) - 1;
+    while (*hexadecimal){
+        decimal += ((*hexadecimal >= 'A') && (*hexadecimal <= 'F')) ? pow(16, len) * (*hexadecimal - 55) : pow(16, len) * (*hexadecimal - 48);
+        --len;
+        ++hexadecimal;
+    }
+    return decimal;
 }
 
 /* -------------------- STRING MANIPULATION -------------------- */
@@ -509,6 +712,11 @@ int charoccur(char *text, char chr){
 
 /* -------------------- SORTING -------------------- */
 
+/*
+ * Function: Sorts array of strings / pointers in alphabetical order.
+ * Compares values of arr[index] and arr[index + 1]
+ * If returned value is > 0, swap values
+ */
 void strsort(char **arr, int size){
     int i, j, arrsize = arrlen(size);
     for (i = 0; i < arrsize; ++i){
@@ -532,9 +740,7 @@ void intsort(int *arr, int size){
         for (j = 0; j < arrsize - 1; ++j){
             if (arr[j] > arr[j + 1]){ // Compares arr[j] and arr[j + 1]
                 // Swaps arr[j] and arr[j + 1] if true
-                temp = arr[j];
-                arr[j] = arr[j + 1];
-                arr[j + 1] = temp;
+                intswap(&arr[j], &arr[j + 1]);
             }
         }
     }
@@ -755,6 +961,32 @@ int swapstream(int n_desc, int std_desc){
 int redstream(int n_desc, int std_desc){
     int err_code = (dup2(n_desc, std_desc) == -1) ? -1 : 1; // Redirects stream and checks for errors
     return err_code; // Returns error code
+}
+
+/* -------------------- INPUTS -------------------- */
+
+/*
+ * Function: Takes input to str var
+ */
+void strinput(char *var, int buffer_size, char *text){
+    printf(" %s : ",text);
+    fgets(var, buffer_size, stdin);
+}
+
+/*
+ * Function: Takes input to int var
+ */
+void intinput(int *var, char *text){
+    printf(" %s : ",text);
+    scanf("%d",var);
+}
+
+/*
+ * Function: Takes input to float var
+
+void flinput(float *var, char *text){
+    printf(" %s : ",text);
+    scanf("%f",var);
 }
 
 /* -------------------- ERROR HANDLING -------------------- */
