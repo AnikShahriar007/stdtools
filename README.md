@@ -37,6 +37,12 @@
   * Added new function 'strinput'
   * Added new function 'intinput'
   * Added new function 'flinput'
+  * Fixed bug in function 'reverse'
+  * Modified function 'wordcount'
+  * Changed function name from 'flswap' to 'dblswap'
+  * Modified 'dblswap' to swap doubles instead of floats
+  * Added new function 'resize_window'
+  * Added new function 'set_title'
 
   ### 0.5 ###
   * Added new function 'flmerge'

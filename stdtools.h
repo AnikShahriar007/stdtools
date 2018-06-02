@@ -24,9 +24,9 @@ int intlen(int number); // Returns int length
 int maxint(int *arr, int arrsize); // Returns maximum int value from array
 int minint(int *arr, int arrsize); // Returns minimum int value from array
 long long int sum(int *arr, int arrsize); // Returns sum of elements of int array
-long long int multiply(int *arr, int arrsize); // Returns multipli. of elements of int array
+long long int multiply(int *arr, int arrsize); // Returns multiplication of elements of int array
 double flsum(double *arr, int size); // Returns sum of elements of double array
-double flmultiply(double *arr, int size); // Returns multipli. of elements of double array
+double flmultiply(double *arr, int size); // Returns multiplication of elements of double array
 
 /* -------------------- MATH FUNCTIONS -------------------- */
 long long int power(int base, int power); // Returns value of base^power in long-long-int
@@ -68,7 +68,7 @@ char **strarr(int args, ...); // Returns array with args str
 /* -------------------- SWAP -------------------- */
 void strswap(char **str_one, char **str_two); // Swaps two strings
 void intswap(int *int_one, int *int_two); // Swaps two ints
-void flswap(float *fl_one, float *fl_two); // Swaps two floats
+void dblswap(double *dbl_one, double *dbl_two); // Swaps two floats
 void charswap(char *chr_a, char *chr_b); // Swaps two characters
 
 /* -------------------- TIME -------------------- */
@@ -102,3 +102,5 @@ int catchsignal(int sig, void (*handler)(int)); // Catches and handles signals
 void ppause(char *msg); // Pauses a program; Waits for user input (char)
 void psleep(int second); // Delays or pauses program for n second (n == second(arg))
 void clear(); // Clears console screen
+void resize_window(int columns, int rows); // Resizes command line window
+void set_title(char *title); // Sets titles of command line window
