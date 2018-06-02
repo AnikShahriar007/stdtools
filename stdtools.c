@@ -7,9 +7,9 @@
  *                C tools for reducing development time and 
  *                for faster production.
  *
- *        VERSION : 0.6.4.5
+ *        VERSION : 0.6.6.1
  *        CREATED : 12 December, 2017
- *  LAST MODIFIED : 17 February, 2018
+ *  LAST MODIFIED : 04 March, 2018
  *       COMPILER : gcc
  *
  * =============================================================
@@ -601,10 +601,10 @@ char *reverse(char *text){
     int len = strlen(text) - 1, i = 0, j = len;
     len += (len % 2 == 0) ? 0 : 1;
     len /= 2;
-    while (len >= 0){
-	charswap(&str[j], &str[i]);
+    while (len > 0){
+	    charswap(&str[j], &str[i]);
         --len;
-	--j;
+	    --j;
         ++i;
     }
     return str;
@@ -680,10 +680,10 @@ char *substring(char *str, int start_index, int end_index){
 int wordcount(char *text){
     int word_count = 0;
     while (*text){
-        if (*text++ == ' ')
+        if ((*text++ == ' ') || (*text++ == '\n') || (*text++ == '\t'))
             ++word_count;
     }
-    return ++word_count;
+    return word_count;
 }
 
 /*
@@ -829,11 +829,11 @@ void intswap(int *int_one, int *int_two){
 /*
  * Function: Swaps two floats
  */
-void flswap(float *fl_one, float *fl_two){
-    float fl_temp;
-    fl_temp = *fl_one;
-    *fl_one = *fl_two;
-    *fl_two = fl_temp;
+void dblswap(double *dbl_one, double *dbl_two){
+    double dbl_temp;
+    dbl_temp = *dbl_one;
+    *dbl_one = *dbl_two;
+    *dbl_two = dbl_temp;
 }
 
 /*
@@ -1066,4 +1066,22 @@ void clear(){
     else system("cls"); // Clears console screen in Windows
 }
 
+/*
+ * Function: Resizes command line windows
+ * Uses system function resize command line windows
+ */
+void resize_window(int columns, int rows){
+    char cmd[30];
+    if (!OS) sprintf(cmd, "mode con: cols=%d lines=%d",columns,rows); // Resize command for Windows
+    system(cmd);
+}
 
+/*
+ * Function: Sets title of command line windows
+ * Uses system function to set title
+ */
+void set_title(char *title){
+    char cmd[30];
+    sprintf(cmd, "title=%s",title);
+    system(title);
+}
