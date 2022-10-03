@@ -2,7 +2,7 @@
 
 **Name         :** stdtools  
 **Version      :** 0.6.4.5  
-**Contributors :** Anonymous883  
+**Contributors :** AnikShahriar007  
 
 **stdtools** is a custom C library containing a number of useful c functions.
 
